@@ -24,7 +24,9 @@ const getArrivalsAtStop = (id: string) => {
 };
 
 const useStopPlace = (id: string | undefined) => {
-  const [transportModes, setTransportModes] = useState<TransportModeTypes[]>();
+  const [transportModes, setTransportModes] = useState<
+    TransportModeTypes | TransportModeTypes[]
+  >();
   const [error, setError] = useState<Error>();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -61,12 +63,22 @@ type LocationItemProps = {
 
 export const LocationItem = ({ name, id }: LocationItemProps) => {
   const { transportModes } = useStopPlace(id);
+  const getTransportModes = () => {
+    if (typeof transportModes === "string") {
+      return <TransportIcon type={transportModes} />;
+    }
+    return (
+      <>
+        {transportModes?.map((modes) => (
+          <TransportIcon type={modes} />
+        ))}
+      </>
+    );
+  };
   return (
     <ListItemButton component={Link} to={`location/${id}`}>
       <ListItemText>{name}</ListItemText>
-      {transportModes?.map((modes) => (
-        <TransportIcon type={modes} />
-      ))}
+      {getTransportModes()}
     </ListItemButton>
   );
 };
