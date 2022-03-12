@@ -7,12 +7,11 @@ import {
   CircularProgress,
   Container,
   List,
-  ListItemButton,
   Toolbar,
 } from "@mui/material";
-import { features } from "process";
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { LocationItem } from "./LocationItem";
 
 const service = createEnturClient({
   clientName: "experis-academy-test",
@@ -130,11 +129,7 @@ export const LocationList = () => {
       {locationsLoading && <CircularProgress />}
       <List>
         {locations?.map(({ name, id }) => {
-          return (
-            <ListItemButton key={id} component={Link} to={`location/${id}`}>
-              {name}
-            </ListItemButton>
-          );
+          return <LocationItem key={id} id={id} name={name} />;
         })}
       </List>
     </>
