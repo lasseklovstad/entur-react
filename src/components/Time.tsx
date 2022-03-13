@@ -3,9 +3,14 @@ import { useEffect, useState } from "react";
 type TimeProps = {
   timeDiff: Date;
   arrivalDate: Date;
+  seperator: boolean;
 };
 
-export const Time = ({ timeDiff: startTime, arrivalDate }: TimeProps) => {
+export const Time = ({
+  timeDiff: startTime,
+  arrivalDate,
+  seperator,
+}: TimeProps) => {
   const [time, setTime] = useState(startTime);
   useEffect(() => {
     const intervall = setInterval(() => {
@@ -28,12 +33,21 @@ export const Time = ({ timeDiff: startTime, arrivalDate }: TimeProps) => {
       {arrivalDate.toLocaleTimeString(undefined, {
         hour: "2-digit",
         minute: "2-digit",
-      })}
+      })}{" "}
+      {seperator && ","}
     </>;
   }
   if (minutes) {
-    return <>{minutes}m</>;
+    return (
+      <>
+        {minutes}m {seperator && ","}
+      </>
+    );
   }
 
-  return <>{seconds}s</>;
+  return (
+    <>
+      {seconds}s {seperator && ","}
+    </>
+  );
 };

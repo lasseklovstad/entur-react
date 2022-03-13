@@ -114,7 +114,7 @@ export const Location = () => {
             >
               <Box display="flex" alignItems={"center"}>
                 <IconButton component={Link} to="/">
-                  <ArrowBack />
+                  <ArrowBack sx={{ color: "common.white" }} />
                 </IconButton>
                 <Typography variant="h6" component="h1">
                   {stopPlace?.name || "-"}
@@ -154,8 +154,10 @@ export const Location = () => {
             }
             return 0;
           })
-          .map((quay) => {
-            return <Quay quay={quay} key={quay.id} />;
+          .map((quay, index, quays) => {
+            return (
+              <Quay quay={quay} key={quay.id} openDefault={quays.length < 3} />
+            );
           })}
       </List>
     </>

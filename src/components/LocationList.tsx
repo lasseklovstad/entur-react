@@ -8,10 +8,12 @@ import {
   Container,
   List,
   Toolbar,
+  Typography,
 } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Favorite } from "./Favorite";
 import { LocationItem } from "./LocationItem";
+import { FavoriteType } from "./QueryTypes";
 
 const service = createEnturClient({
   clientName: "experis-academy-test",
@@ -99,9 +101,13 @@ export const LocationList = () => {
     getLocations,
     locationsLoading,
   } = useNearbyLocations();
+  const localStorageString = localStorage.getItem("favorite");
+  const favorite: FavoriteType[] = localStorageString
+    ? JSON.parse(localStorageString)
+    : [];
   return (
     <>
-      <AppBar position="static">
+      <AppBar position="sticky">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Button
@@ -127,6 +133,27 @@ export const LocationList = () => {
         </Alert>
       )}
       {locationsLoading && <CircularProgress />}
+      {!!favorite.length && (
+        <>
+          <Typography variant="h5" sx={{ ml: 1, mt: 1 }}>
+            Favoritter
+          </Typography>
+          <List>
+            {favorite?.map(({ quayId, lineId }) => {
+              return (
+                <Favorite
+                  key={quayId + lineId}
+                  quayId={quayId}
+                  lineId={lineId}
+                />
+              );
+            })}
+          </List>
+        </>
+      )}
+      <Typography variant="h5" sx={{ ml: 1 }}>
+        I Nærheten
+      </Typography>
       <List>
         {locations?.map(({ name, id }) => {
           return <LocationItem key={id} id={id} name={name} />;

@@ -49,9 +49,15 @@ export interface IEstimatedCall {
     };
   };
 }
+export type LineGroupType = { estimatedCalls: IEstimatedCall[] } & ILine;
 
 export interface IQuery {
   id: string;
   name: string;
   quays: IQuay[];
 }
+
+export type FavoriteType = {
+  lineId: string;
+  quayId: string;
+};
