@@ -81,10 +81,12 @@ export const Line = ({
           ml: 1,
         }}
       />
-      <ListItemText sx={{ ml: 1 }}>
-        {line.estimatedCalls[0].destinationDisplay.frontText}
-        {quayName && ` (${quayName})`}
-      </ListItemText>
+      <ListItemText
+        sx={{ ml: 1 }}
+        primary={line.estimatedCalls[0].destinationDisplay.frontText}
+        secondary={quayName && `${quayName}`}
+      />
+
       {onUpdate && (
         <IconButton onClick={onUpdate}>
           <Refresh />
