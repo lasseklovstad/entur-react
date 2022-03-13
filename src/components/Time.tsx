@@ -28,26 +28,28 @@ export const Time = ({
   const minutes = time.getMinutes();
   const seconds = time.getSeconds();
 
-  if (hours) {
-    <>
-      {arrivalDate.toLocaleTimeString(undefined, {
-        hour: "2-digit",
-        minute: "2-digit",
-      })}{" "}
-      {seperator && ","}
-    </>;
+  if (hours > 0) {
+    return (
+      <>
+        {arrivalDate.toLocaleTimeString(undefined, {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
+        {seperator && ", "}
+      </>
+    );
   }
   if (minutes) {
     return (
       <>
-        {minutes}m {seperator && ","}
+        {minutes}m{seperator && ", "}
       </>
     );
   }
 
   return (
     <>
-      {seconds}s {seperator && ","}
+      {seconds}s{seperator && ", "}
     </>
   );
 };

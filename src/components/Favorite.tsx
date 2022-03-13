@@ -56,6 +56,7 @@ const useQuay = (id: string | undefined) => {
     if (id) {
       setError(undefined);
       setLoading(true);
+      setQuay(undefined);
       getArrivalsAtStop(id)
         .then((json: any) => setQuay(json.quay as IQuay))
         .catch((e) => setError(e))

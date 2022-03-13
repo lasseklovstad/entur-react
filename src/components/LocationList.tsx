@@ -102,9 +102,14 @@ export const LocationList = () => {
     locationsLoading,
   } = useNearbyLocations();
   const localStorageString = localStorage.getItem("favorite");
-  const favorite: FavoriteType[] = localStorageString
-    ? JSON.parse(localStorageString)
-    : [];
+  const [favorite, setFavorite] = useState<FavoriteType[]>(
+    localStorageString ? JSON.parse(localStorageString) : []
+  );
+
+  const resetFavorites = () => {
+    localStorage.setItem("favorite", "[]");
+    setFavorite([]);
+  };
   return (
     <>
       <AppBar position="sticky">
@@ -115,6 +120,12 @@ export const LocationList = () => {
               sx={{ my: 2, color: "white", display: "block" }}
             >
               Refresh
+            </Button>
+            <Button
+              onClick={resetFavorites}
+              sx={{ my: 2, color: "white", display: "block" }}
+            >
+              Reset favoritter
             </Button>
           </Toolbar>
         </Container>
@@ -151,7 +162,7 @@ export const LocationList = () => {
           </List>
         </>
       )}
-      <Typography variant="h5" sx={{ ml: 1 }}>
+      <Typography variant="h5" sx={{ ml: 1, mt: 1 }}>
         I Nærheten
       </Typography>
       <List>
