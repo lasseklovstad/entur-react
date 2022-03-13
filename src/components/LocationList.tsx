@@ -7,6 +7,7 @@ import {
   CircularProgress,
   Container,
   List,
+  TextField,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -34,6 +35,20 @@ const useGetGeoLocation = () => {
   return { geoLocation, geoLocationError };
 };
 
+const searchStops = async (text: string) => {
+  const featureCollection = await service.geocoder.autocomplete({
+    text,
+    layers: ["venue"],
+    size: 10,
+    boundary: {
+      circle: {
+        radius: 2,
+      },
+    },
+  });
+  return featureCollection.features;
+};
+
 const getNearbeyStops = async (location: GeolocationCoordinates) => {
   const featureCollection = await service.geocoder.reverse({
     point: {
@@ -56,34 +71,49 @@ interface ILocation {
   id: string;
 }
 
-const useNearbyLocations = () => {
+const useNearbyLocations = (text: string | undefined) => {
   const { geoLocationError, geoLocation } = useGetGeoLocation();
   const [locations, setLocations] = useState<ILocation[]>();
   const [locationsError, setLocationsError] = useState<Error>();
   const [locationsLoading, setLocationsLoading] = useState<boolean>(false);
 
-  const getLocations = useCallback(() => {
-    if (geoLocation) {
+  const getLocations = useCallback(
+    (text?: string) => {
       setLocationsError(undefined);
       setLocations(undefined);
       setLocationsLoading(true);
-      getNearbeyStops(geoLocation.coords)
-        .then((f) =>
-          setLocations(
-            f.map((f) => ({
-              name: f.properties.name,
-              id: f.properties.id,
-            }))
+      if (text) {
+        searchStops(text)
+          .then((f) =>
+            setLocations(
+              f.map((f) => ({
+                name: f.properties.name,
+                id: f.properties.id,
+              }))
+            )
           )
-        )
-        .catch((e) => setLocationsError(e))
-        .finally(() => setLocationsLoading(false));
-    }
-  }, [geoLocation]);
+          .catch((e) => setLocationsError(e))
+          .finally(() => setLocationsLoading(false));
+      } else if (geoLocation) {
+        getNearbeyStops(geoLocation.coords)
+          .then((f) =>
+            setLocations(
+              f.map((f) => ({
+                name: f.properties.name,
+                id: f.properties.id,
+              }))
+            )
+          )
+          .catch((e) => setLocationsError(e))
+          .finally(() => setLocationsLoading(false));
+      }
+    },
+    [geoLocation]
+  );
 
   useEffect(() => {
-    getLocations();
-  }, [getLocations]);
+    getLocations(text);
+  }, [getLocations, text]);
   return {
     locations,
     geoLocationError,
@@ -94,13 +124,25 @@ const useNearbyLocations = () => {
 };
 
 export const LocationList = () => {
+  const [searchText, setSearchText] = useState("");
+  const [debounce, setDebounce] = useState("");
+
+  useEffect(() => {
+    const ref = setTimeout(() => {
+      setDebounce(searchText);
+    }, 500);
+    return () => {
+      clearTimeout(ref);
+    };
+  }, [searchText]);
+
   const {
     locations,
     geoLocationError,
     locationsError,
     getLocations,
     locationsLoading,
-  } = useNearbyLocations();
+  } = useNearbyLocations(debounce);
   const localStorageString = localStorage.getItem("favorite");
   const [favorite, setFavorite] = useState<FavoriteType[]>(
     localStorageString ? JSON.parse(localStorageString) : []
@@ -116,7 +158,7 @@ export const LocationList = () => {
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Button
-              onClick={getLocations}
+              onClick={() => getLocations()}
               sx={{ my: 2, color: "white", display: "block" }}
             >
               Refresh
@@ -127,6 +169,12 @@ export const LocationList = () => {
             >
               Reset favoritter
             </Button>
+            <TextField
+              value={searchText}
+              label="Søk"
+              placeholder="Oslo"
+              onChange={(e) => setSearchText(e.target.value)}
+            />
           </Toolbar>
         </Container>
       </AppBar>
@@ -163,7 +211,7 @@ export const LocationList = () => {
         </>
       )}
       <Typography variant="h5" sx={{ ml: 1, mt: 1 }}>
-        I Nærheten
+        {debounce ? "Søk" : "I Nærheten"}
       </Typography>
       <List>
         {locations?.map(({ name, id }) => {

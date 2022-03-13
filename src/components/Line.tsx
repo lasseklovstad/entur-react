@@ -1,4 +1,5 @@
-import { FavoriteBorder, Favorite, Refresh } from "@mui/icons-material";
+import { FavoriteBorder, Refresh } from "@mui/icons-material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { ListItem, Box, ListItemText, IconButton } from "@mui/material";
 import { useState } from "react";
 import { FavoriteType, LineGroupType } from "./QueryTypes";
@@ -92,8 +93,8 @@ export const Line = ({
           <Refresh />
         </IconButton>
       )}
-      <IconButton onClick={handleClickFavorite}>
-        {isFavorite ? <Favorite /> : <FavoriteBorder />}
+      <IconButton onClick={handleClickFavorite} sx={{ color: "#ff6f6f" }}>
+        {isFavorite ? <FavoriteIcon /> : <FavoriteBorder />}
       </IconButton>
       <TransportIcon type={line.transportMode} />
     </ListItem>
