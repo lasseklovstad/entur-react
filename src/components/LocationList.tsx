@@ -1,11 +1,12 @@
 import createEnturClient from "@entur/sdk";
+import { Refresh } from "@mui/icons-material";
 import {
   Alert,
   AlertTitle,
   AppBar,
   Button,
   CircularProgress,
-  Container,
+  IconButton,
   List,
   TextField,
   Toolbar,
@@ -148,40 +149,23 @@ export const LocationList = () => {
     locationsLoading,
   } = useNearbyLocations(debounce);
   const localStorageString = localStorage.getItem("favorite");
-  const [favorite, setFavorite] = useState<FavoriteType[]>(
-    localStorageString ? JSON.parse(localStorageString) : []
-  );
 
-  const resetFavorites = () => {
-    localStorage.setItem("favorite", "[]");
-    setFavorite([]);
-  };
+  const favorite: FavoriteType[] = localStorageString
+    ? JSON.parse(localStorageString)
+    : [];
+
   return (
     <>
       <AppBar position="sticky">
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            <Button
-              onClick={() => getLocations()}
-              sx={{ my: 2, color: "white", display: "block" }}
-            >
-              Refresh
-            </Button>
-            <Button
-              onClick={resetFavorites}
-              sx={{ my: 2, color: "white", display: "block" }}
-            >
-              Reset favoritter
-            </Button>
-            <TextField
-              sx={{ color: "common.white" }}
-              value={searchText}
-              label="Søk"
-              placeholder="Oslo"
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-          </Toolbar>
-        </Container>
+        <Toolbar disableGutters sx={{ pl: 2 }}>
+          <TextField
+            sx={{ color: "common.white" }}
+            value={searchText}
+            label="Søk"
+            placeholder="Oslo"
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+        </Toolbar>
       </AppBar>
 
       {geoLocationError && !hideError && (
@@ -197,7 +181,7 @@ export const LocationList = () => {
           {locationsError.message}
         </Alert>
       )}
-      {locationsLoading && <CircularProgress />}
+
       {!!favorite.length && (
         <>
           <Typography variant="h5" sx={{ ml: 1, mt: 1 }}>
@@ -218,7 +202,11 @@ export const LocationList = () => {
       )}
       <Typography variant="h5" sx={{ ml: 1, mt: 1 }}>
         {debounce ? "Søk" : "I Nærheten"}
+        <IconButton onClick={() => getLocations()}>
+          <Refresh />
+        </IconButton>
       </Typography>
+      {locationsLoading && <CircularProgress sx={{ ml: 2 }} />}
       <List>
         {locations?.map(({ name, id }) => {
           return <LocationItem key={id} id={id} name={name} />;

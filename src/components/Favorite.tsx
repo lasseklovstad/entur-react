@@ -52,12 +52,11 @@ const useQuay = (id: string | undefined) => {
   const [error, setError] = useState<Error>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const getQuay = useCallback(() => {
+  const getQuay = useCallback(async () => {
     if (id) {
       setError(undefined);
       setLoading(true);
-      setQuay(undefined);
-      getArrivalsAtStop(id)
+      await getArrivalsAtStop(id)
         .then((json: any) => setQuay(json.quay as IQuay))
         .catch((e) => setError(e))
         .finally(() => setLoading(false));

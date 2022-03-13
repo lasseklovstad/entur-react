@@ -10,7 +10,7 @@ type QuayProps = {
   lineId?: string;
   openDefault?: boolean;
   hideHeader?: boolean;
-  onUpdate?: () => void;
+  onUpdate?: () => Promise<void>;
 };
 
 export const Quay = ({

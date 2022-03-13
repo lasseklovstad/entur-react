@@ -1,6 +1,12 @@
 import { FavoriteBorder, Refresh } from "@mui/icons-material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { ListItem, Box, ListItemText, IconButton } from "@mui/material";
+import {
+  ListItem,
+  Box,
+  ListItemText,
+  IconButton,
+  CircularProgress,
+} from "@mui/material";
 import { useState } from "react";
 import { FavoriteType, LineGroupType } from "./QueryTypes";
 import { TransportIcon } from "./TransportIcon";
@@ -10,7 +16,7 @@ type LineProps = {
   index: number;
   quayId: string;
   quayName?: string;
-  onUpdate?: () => void;
+  onUpdate?: () => Promise<void>;
 };
 
 export const Line = ({
@@ -21,6 +27,7 @@ export const Line = ({
   onUpdate,
 }: LineProps) => {
   const localStorageString = localStorage.getItem("favorite");
+  const [loading, setLoading] = useState(false);
   const [favorite, setFavorite] = useState<FavoriteType[]>(
     localStorageString ? JSON.parse(localStorageString) : []
   );
@@ -89,8 +96,14 @@ export const Line = ({
       />
 
       {onUpdate && (
-        <IconButton onClick={onUpdate}>
-          <Refresh />
+        <IconButton
+          onClick={async () => {
+            setLoading(true);
+            await onUpdate();
+            setLoading(false);
+          }}
+        >
+          {loading ? <CircularProgress size={22} /> : <Refresh />}
         </IconButton>
       )}
       <IconButton onClick={handleClickFavorite} sx={{ color: "#ff6f6f" }}>
