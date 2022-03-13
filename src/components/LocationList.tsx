@@ -79,10 +79,10 @@ const useNearbyLocations = (text: string | undefined) => {
 
   const getLocations = useCallback(
     (text?: string) => {
-      setLocationsError(undefined);
-      setLocations(undefined);
-      setLocationsLoading(true);
       if (text) {
+        setLocationsError(undefined);
+        setLocations(undefined);
+        setLocationsLoading(true);
         searchStops(text)
           .then((f) =>
             setLocations(
@@ -95,6 +95,9 @@ const useNearbyLocations = (text: string | undefined) => {
           .catch((e) => setLocationsError(e))
           .finally(() => setLocationsLoading(false));
       } else if (geoLocation) {
+        setLocationsError(undefined);
+        setLocations(undefined);
+        setLocationsLoading(true);
         getNearbeyStops(geoLocation.coords)
           .then((f) =>
             setLocations(
@@ -126,6 +129,7 @@ const useNearbyLocations = (text: string | undefined) => {
 export const LocationList = () => {
   const [searchText, setSearchText] = useState("");
   const [debounce, setDebounce] = useState("");
+  const [hideError, setHideError] = useState(false);
 
   useEffect(() => {
     const ref = setTimeout(() => {
@@ -170,6 +174,7 @@ export const LocationList = () => {
               Reset favoritter
             </Button>
             <TextField
+              sx={{ color: "common.white" }}
               value={searchText}
               label="Søk"
               placeholder="Oslo"
@@ -179,10 +184,11 @@ export const LocationList = () => {
         </Container>
       </AppBar>
 
-      {geoLocationError && (
+      {geoLocationError && !hideError && (
         <Alert severity="error">
           <AlertTitle>Det oppstod en feil ved henting av posisjon</AlertTitle>
           {geoLocationError.message}
+          <Button onClick={() => setHideError(true)}>Skjul feilmelding</Button>
         </Alert>
       )}
       {locationsError && (
